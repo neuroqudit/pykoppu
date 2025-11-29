@@ -4,11 +4,7 @@
 </center>
 
 
-
-
-KOPPU (K-dimensional Organoid Probabilistic Processing Unit)
-
-**Probabilistic Coprocessor based on Cerebral Organoids for Massively Parallel Resolution of k-PUBO Problems**
+**K-Dimensional Probabilistic Coprocessor based on Cerebral Organoids for Massively Parallel Resolution of k-PUBO Problems**
 
 The contemporary computational paradigm stands at a crossroads between the deterministic rigidity of the von Neumann architecture and the coherence fragility of quantum systems. To overcome the energetic and scalability limitations inherent to silicon in solving combinatorial and stochastic optimization problems, we present a full-stack bio-hybrid ecosystem centered on the **pobit** (Probabilistic Organoid Bit) information unit. This architecture integrates human cerebral organoids interfaced via High-Density Multi-Electrode Arrays (HD-MEA) into a dedicated hardware accelerator, the **OPU** (Organoid Processing Unit).
 
@@ -140,24 +136,24 @@ The Python library that allows users to define problems at a high level and choo
 **Usage Example (MAX-CUT Problem):**
 
 ```python
-import pypobit as po
+import pykoppu as pk
 import networkx as nx
 
 # 1. Graph Definition
 G = nx.erdos_renyi_graph(n=20, p=0.4)
 
 # 2. Problem Instantiation
-problem = po.problem.MaxCut(graph=G)
+problem = pk.problem.MaxCut(graph=G)
 
 # 3. Backend Configuration (Choose Cloud Target)
 # Option A: Simulator (Fast, for debugging and calibration)
-# backend = po.backend.PobitCloud(api_key="...", target="simulator")
+# backend = pk.backend.PobitCloud(api_key="...", target="simulator")
 
 # Option B: Biological Hardware (For final execution and energy efficiency)
-backend = po.backend.PobitCloud(api_key="...", target="bio_hardware")
+backend = pk.backend.PobitCloud(api_key="...", target="bio_hardware")
 
 # 4. Resolution
-solver = po.Solver(backend=backend)
+solver = pk.Solver(backend=backend)
 result = solver.solve(problem, strategy="annealing")
 
 # 5. Results
@@ -165,9 +161,9 @@ print(f"Cut Quality: {result.metrics['cut_quality']}%")
 print(f"Executed on: {result.metadata['device_type']}") # Ex: "OPU-V1-Bio" or "Sim-Core"
 ```
 
-## 8. The Cloud: koppu.com and the OaaS Model
-
-The koppu.com platform abstracts biological complexity, offering scalable neural computing through the Organoid as a Service (OaaS) business model. The platform offers two distinct service levels:
+## 8. The Cloud: koppu.io and the OaaS Model
+    
+The koppu.io platform abstracts biological complexity, offering scalable neural computing through the Organoid as a Service (OaaS) business model. The platform offers two distinct service levels:
 
 ### 8.1 Hybrid Infrastructure
 
