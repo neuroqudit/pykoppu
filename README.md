@@ -1,6 +1,6 @@
 
 <center>
-<img src="koppu.png" alt="Alt Text" width="300" height="300">
+<img src="koppu.png" alt="Alt Text" width="200" height="200">
 </center>
 
 
