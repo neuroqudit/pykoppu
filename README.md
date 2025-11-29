@@ -124,14 +124,14 @@ The embedded operating system that manages OPU resources.
 *   **Memory Manager**: Loads matrices and tensors (J, h, C) received from the user into the FPGA/Microcontroller fast access memory.
 *   **I/O Manager**: Coordinates synchronous data flow with the HAL, ensuring feedback loop latency remains deterministic.
 
-## 7. The SDK: pypobit
+## 7. The SDK: pykoppu
 
 The Python library that allows users to define problems at a high level and choose the execution backend.
 
 *   **Modules**:
-    *   `pypobit.problem`: Classes for problem definition (MaxCut, Knapsack, SAT).
-    *   `pypobit.compiler`: Translates the problem to BioASM.
-    *   `pypobit.backend`: Manages connection to the pobit.io cloud.
+    *   `pykoppu.problem`: Classes for problem definition (MaxCut, Knapsack, SAT).
+    *   `pykoppu.compiler`: Translates the problem to BioASM.
+    *   `pykoppu.backend`: Manages connection to the koppu.io cloud.
 
 **Usage Example (MAX-CUT Problem):**
 
@@ -162,7 +162,7 @@ print(f"Executed on: {result.metadata['device_type']}") # Ex: "OPU-V1-Bio" or "S
 ```
 
 ## 8. The Cloud: koppu.io and the OaaS Model
-    
+
 The koppu.io platform abstracts biological complexity, offering scalable neural computing through the Organoid as a Service (OaaS) business model. The platform offers two distinct service levels:
 
 ### 8.1 Hybrid Infrastructure
