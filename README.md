@@ -2,12 +2,6 @@
   <img src="koppu.png" alt="KOPPU Logo" width="400"/>
 </p>
 
-<h1 align="center">KOPPU</h1>
-
-<p align="center">
-  <strong>K-dimensional Organoid Probabilistic Processing Unit</strong>
-</p>
-
 <p align="center">
   The world's first full-stack bio-hybrid computing architecture for massive parallel solving of k-PUBO optimization problems.
 </p>
