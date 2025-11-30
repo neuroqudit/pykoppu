@@ -24,6 +24,18 @@ class OPU:
 
     def _load_bio_specs(self):
         """
-        Loads biological specifications.
+        Loads biological specifications for the Critical Regime.
+
+        Returns:
+            dict: A dictionary containing the physical parameters.
         """
-        pass
+        return {
+            "R": 50 * 1e6,        # 50 Mohm
+            "tau": 20 * 1e-3,     # 20 ms
+            "v_rest": -70 * 1e-3, # -70 mV (El)
+            "v_reset": -70 * 1e-3,# -70 mV (Vr)
+            "v_threshold": -50 * 1e-3, # -50 mV (Vt)
+            "i_offset": 0.36 * 1e-9,   # 0.36 nA
+            "sigma": 2.0 * 1e-3,       # 2.0 mV
+            "refractory": 5 * 1e-3     # 5 ms
+        }

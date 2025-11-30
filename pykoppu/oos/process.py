@@ -32,3 +32,6 @@ class Process:
         Starts the process.
         """
         self.status = "running"
+        if self.hardware and self.code:
+            return self.hardware.execute_program(self.code)
+        return None
