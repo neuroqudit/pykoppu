@@ -1,18 +1,40 @@
 Metadata-Version: 2.4
 Name: pykoppu
-Version: 0.1.0
+Version: 0.1.1
 Summary: SDK for KOPPU (K-dimensional Organoid Probabilistic Processing Unit)
+Home-page: https://github.com/koppu/pykoppu
 Author: KOPPU Team
+Author-email: contact@koppu.io
+Project-URL: Bug Tracker, https://github.com/koppu/pykoppu/issues
 Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
 Classifier: Operating System :: OS Independent
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Science/Research
+Classifier: Topic :: Scientific/Engineering :: Bio-Informatics
 Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
 Requires-Dist: numpy
 Requires-Dist: scipy
 Requires-Dist: networkx
 Requires-Dist: brian2
 Requires-Dist: mkdocs
 Dynamic: author
+Dynamic: author-email
 Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: license-file
+Dynamic: project-url
 Dynamic: requires-dist
 Dynamic: requires-python
 Dynamic: summary
+
+# KOPPU (K-dimensional Organoid Probabilistic Processing Unit)
+
+**Target Platform:** OaaS (Organoid as a Service) / `koppu.io`
+**SDK:** `pykoppu`
+
+KOPPU is a project designed to interface with organoid processing units. This repository contains the `pykoppu` SDK.

@@ -3,3 +3,4 @@ scipy
 networkx
 brian2
 mkdocs
+matplotlib

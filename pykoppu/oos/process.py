@@ -2,6 +2,8 @@
 Process module.
 """
 
+from typing import Any
+
 class Process:
     """
     Represents a process in the OOS.
