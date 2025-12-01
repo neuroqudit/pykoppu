@@ -16,6 +16,7 @@ class PUBOProblem(ABC):
     def __init__(self):
         self.J: np.ndarray = np.array([])
         self.h: np.ndarray = np.array([])
+        self.offset: float = 0.0
         
     @abstractmethod
     def to_hamiltonian(self) -> None:

@@ -58,6 +58,11 @@ class Process:
                 final_state = np.array([])
                 energy_trace = []
                 spike_data = ([], [])
+        
+            # Apply problem-specific energy offset
+            offset = getattr(self.problem, 'offset', 0.0)
+            if len(energy_trace) > 0:
+                energy_trace = np.array(energy_trace) + offset
                 
         finally:
             self.driver.disconnect()

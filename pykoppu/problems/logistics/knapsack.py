@@ -76,6 +76,10 @@ class Knapsack(PUBOProblem):
         # h_i = v_i - P * w_i^2 + 2 * P * C * w_i
         self.h = values - P * (weights**2) + 2 * P * C * weights
         
+        # Constant term (offset)
+        # H_const = P * C^2
+        self.offset = P * (C**2)
+        
         # Quadratic terms
         # J_ij = -2 * P * w_i * w_j
         for i in range(n):
