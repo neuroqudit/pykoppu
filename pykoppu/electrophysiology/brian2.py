@@ -84,6 +84,12 @@ class Brian2Driver(ElectrophysiologyDriver):
         dv/dt = (-(v - El) + R * (I_offset + I_input)) / tau + sigma_noise * sqrt(2/tau) * xi : volt
         I_input : amp
         sigma_noise : volt
+        R : ohm
+        tau : second
+        El : volt
+        Vt : volt
+        Vr : volt
+        I_offset : amp
         '''
         
         self.neurons = b2.NeuronGroup(
@@ -95,6 +101,13 @@ class Brian2Driver(ElectrophysiologyDriver):
         )
         
         # Initialize variables
+        self.neurons.R = R
+        self.neurons.tau = tau
+        self.neurons.El = El
+        self.neurons.Vt = Vt
+        self.neurons.Vr = Vr
+        self.neurons.I_offset = I_offset
+        
         self.neurons.v = El # Start at rest
         self.neurons.sigma_noise = sigma_init
         self.neurons.I_input = 0 * b2.amp
