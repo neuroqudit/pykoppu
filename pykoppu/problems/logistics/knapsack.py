@@ -101,6 +101,10 @@ class Knapsack(PUBOProblem):
                 
         valid = total_weight <= self.capacity
         
+        return {
+            "valid": valid,
+            "total_value": total_value,
+            "total_weight": total_weight,
             "capacity": self.capacity
         }
 
