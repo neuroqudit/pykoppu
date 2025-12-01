@@ -1,39 +1,45 @@
 """
-Process module.
+OOS Process Module.
+
+This module defines the Process class which manages the execution lifecycle.
 """
 
-from typing import Any
+from typing import Any, Optional
+from ..biocompiler.compiler import BioCompiler
+from ..electrophysiology import connect
 
 class Process:
     """
-    Represents a process in the OOS.
-
-    Attributes:
-        pid (int): The process ID.
-        status (str): The status of the process.
-        code (Any): The code associated with the process.
-        hardware (Any): The hardware resources allocated to the process.
+    Represents a computing process on the OPU.
     """
-
-    def __init__(self, pid: int, code: Any, hardware: Any):
+    
+    def __init__(self, problem: Any, backend: str = "brian2"):
         """
-        Initializes the Process.
-
+        Initialize a process.
+        
         Args:
-            pid (int): The process ID.
-            code (Any): The code associated with the process.
-            hardware (Any): The hardware resources allocated to the process.
+            problem: The problem instance to solve.
+            backend (str): The backend driver to use.
         """
-        self.pid = pid
-        self.status = "created"
-        self.code = code
-        self.hardware = hardware
-
-    def start(self):
+        self.problem = problem
+        self.backend = backend
+        self.compiler = BioCompiler()
+        self.driver = connect(backend)
+        
+    def run(self) -> Any:
         """
-        Starts the process.
+        Run the process.
+        
+        Returns:
+            Any: The result of the computation.
         """
-        self.status = "running"
-        if self.hardware and self.code:
-            return self.hardware.execute_program(self.code)
-        return None
+        # 1. Compile
+        instructions = self.compiler.compile(self.problem)
+        
+        # 2. Execute
+        try:
+            result = self.driver.execute(instructions)
+        finally:
+            self.driver.disconnect()
+            
+        return result

@@ -1,8 +1,14 @@
 LICENSE
 MANIFEST.in
 README.md
+pyproject.toml
 requirements.txt
 setup.py
+docs/index.md
+docs/api/biocompiler.md
+docs/api/electrophysiology.md
+docs/api/opu.md
+docs/api/problems.md
 pykoppu/__init__.py
 pykoppu.egg-info/PKG-INFO
 pykoppu.egg-info/SOURCES.txt
@@ -24,3 +30,9 @@ pykoppu/opu/kernel.py
 pykoppu/opu/pobit.py
 pykoppu/problems/__init__.py
 pykoppu/problems/base.py
+pykoppu/problems/graph/__init__.py
+pykoppu/problems/graph/maxcut.py
+tests/.gitkeep
+tests/test_sanity.py
+tests/validate_opu.py
+tests/__pycache__/test_sanity.cpython-312.pyc

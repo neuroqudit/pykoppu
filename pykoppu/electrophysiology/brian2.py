@@ -1,156 +1,185 @@
 """
-Brian2 driver module.
+Brian2 Driver Module.
+
+Implements the digital twin driver using the Brian2 simulator.
 """
-try:
-    import brian2
-    HAS_BRIAN2 = True
-except ImportError:
-    HAS_BRIAN2 = False
-    import warnings
-    warnings.warn("Brian2 not installed. Simulation will not run.")
 
-from .base import BaseDriver
+import brian2 as b2
+import numpy as np
+from typing import List, Any
+from .base import ElectrophysiologyDriver
+from ..biocompiler.isa import OpCode, Instruction
+from ..opu.device import OPU
 
-class Brian2Driver(BaseDriver):
+class Brian2Driver(ElectrophysiologyDriver):
     """
-    Driver for Brian2 simulator.
+    Driver for the Brian2-based Digital Twin.
     """
-
-    def __init__(self, opu):
+    
+    def __init__(self, opu: OPU):
+        self.opu = opu
+        self.network = None
+        self.neurons = None
+        self.J = None
+        self.h = None
+        self.sigma = 0.0
+        
+    def connect(self):
+        """Initialize the Brian2 environment."""
+        # Reset Brian2 scope
+        b2.start_scope()
+        
+    def disconnect(self):
+        """Clean up resources."""
+        self.network = None
+        self.neurons = None
+        
+    def execute(self, instructions: List[Instruction]) -> Any:
         """
-        Initializes the Brian2Driver.
-
-        Args:
-            opu (OPU): The OPU instance.
+        Execute BioASM instructions using Brian2.
         """
-        super().__init__(opu)
-        if HAS_BRIAN2:
-            brian2.defaultclock.dt = 0.5 * brian2.ms
-
-    def execute_program(self, bioasm):
-        """
-        Executes a bio-assembly program using Brian2.
-
-        Args:
-            bioasm: The bio-assembly program to execute.
-
-        Returns:
-            numpy.ndarray: The final state of the neurons.
-        """
-        if not HAS_BRIAN2:
-            print("Brian2 not installed. Returning mock result.")
-            import numpy as np
-            return np.zeros(self.opu.capacity)
-
-        specs = self.opu._load_bio_specs()
+        results = {}
         
-        # Physical parameters
-        R = specs["R"] * brian2.ohm
-        tau = specs["tau"] * brian2.second
-        El = specs["v_rest"] * brian2.volt
-        Vr = specs["v_reset"] * brian2.volt
-        Vt = specs["v_threshold"] * brian2.volt
-        i_offset = specs["i_offset"] * brian2.amp
-        refractory = specs["refractory"] * brian2.second
+        for instr in instructions:
+            if instr.opcode == OpCode.ALC:
+                self._allocate(instr.operands[0])
+            elif instr.opcode == OpCode.LDJ:
+                self.J = np.array(instr.operands[0])
+            elif instr.opcode == OpCode.LDH:
+                self.h = np.array(instr.operands[0])
+            elif instr.opcode == OpCode.SIG:
+                self.sigma = float(instr.operands[0])
+                # Update noise in the neuron model if possible, or re-init
+                # For simplicity in this driver, we might need to re-create or update a variable
+                if self.neurons:
+                    self.neurons.sigma_noise = self.sigma * b2.volt
+            elif instr.opcode == OpCode.RUN:
+                duration = float(instr.operands[0])
+                self._run_simulation(duration)
+            elif instr.opcode == OpCode.RD:
+                # Read state (spikes or membrane potential)
+                # For PUBO, we might look at firing rates or final potential
+                # Here we return the final membrane potentials as a proxy for state
+                results['state'] = self.neurons.v[:]
+                
+        return results
         
-        # Equations
-        eqs = """
-        dv/dt = (-(v - El) + R * (I_kernel + i_offset) + sigma * sqrt(tau) * xi) / tau : volt (unless refractory)
-        I_kernel : amp
-        sigma : volt
-        """
+    def _allocate(self, num_neurons: int):
+        """Create the neuron group."""
+        specs = self.opu.specs
         
-        # Create NeuronGroup (capacity from OPU)
-        N = self.opu.capacity
-        G = brian2.NeuronGroup(N, eqs, threshold='v > Vt', reset='v = Vr', refractory=refractory, method='euler')
-        G.v = El
-        G.sigma = specs["sigma"] * brian2.volt
-        G.I_kernel = 0 * brian2.amp
+        # LIF Model with noise
+        # dv/dt = (-(v - El) + R * I) / tau : volt
+        # I = I_syn + I_offset + I_noise : amp
+        # I_noise = sigma * xi * tau**-0.5 : amp (White noise approximation)
+        # Actually, standard Langevin: dv/dt = (-(v-El) + R*I)/tau + sigma*sqrt(2/tau)*xi
         
-        # Network
-        net = brian2.Network(G)
+        # Using the user's specs:
+        # R=50*Mohm, tau=20*ms, El=-70*mV, Vt=-50*mV, Vr=-70*mV
+        # I_offset=0.36*nA, sigma=2.0*mV
         
-        # Internal coupling matrices
-        import numpy as np
-        J = np.zeros((N, N))
-        h = np.zeros(N)
+        # Brian2 equations
+        eqs = '''
+        dv/dt = (-(v - El) + R * (I_offset + I_input)) / tau + sigma_noise * sqrt(2/tau) * xi : volt
+        I_input : amp
+        R : ohm
+        tau : second
+        El : volt
+        Vt : volt
+        Vr : volt
+        I_offset : amp
+        sigma_noise : volt
+        '''
         
-        # OpCode definitions (need to import or define locally if not available)
-        # Assuming we can match strings for now or import OpCode
-        from pykoppu.biocompiler.isa import OpCode
-
-        final_state = None
-
-        for instruction in bioasm:
-            opcode = instruction.get("op")
+        self.neurons = b2.NeuronGroup(
+            num_neurons,
+            eqs,
+            threshold='v > Vt',
+            reset='v = Vr',
+            method='euler'
+        )
+        
+        # Set parameters
+        self.neurons.R = specs.R * b2.ohm
+        self.neurons.tau = specs.tau * b2.second
+        self.neurons.El = specs.El * b2.volt
+        self.neurons.Vt = specs.Vt * b2.volt
+        self.neurons.Vr = specs.Vr * b2.volt
+        self.neurons.I_offset = specs.I_offset * b2.amp
+        self.neurons.sigma_noise = specs.sigma * b2.volt # Initial sigma
+        
+        # Initialize v
+        self.neurons.v = specs.El * b2.volt
+        
+        # Create Network
+        self.network = b2.Network(self.neurons)
+        
+        # Add feedback loop
+        # We need to update I_input based on J and h and spikes
+        # For a continuous approximation or rate-based, we might use v directly
+        # But the prompt asks for "implement the feedback loop using @network_operation"
+        # "to apply matrix J and vector h in real time"
+        
+        @b2.network_operation(dt=1*b2.ms)
+        def feedback_loop():
+            # Simple recurrent interaction model
+            # I_input = J @ s + h
+            # What is 's'? Spikes? Firing rate? Or just v?
+            # In Hopfield/Ising implementations on neuromorphic, usually:
+            # s_i = 1 if v_i > threshold (spike), then filtered.
+            # Or continuous: s_i = sigmoid(v_i)
             
-            if opcode == OpCode.LDJ:
-                # Load J matrix element: LDJ i j value
-                i = instruction.get("i")
-                j = instruction.get("j")
-                val = instruction.get("val")
-                J[i, j] = val
-                J[j, i] = val # Symmetric? Assuming symmetric for now based on typical Ising/PUBO
+            # Let's assume a simplified model where we use the current normalized potential as 'state'
+            # or we just integrate spikes.
+            # Given the prompt is about "organoid", let's assume a direct coupling.
+            
+            if self.J is not None and self.h is not None:
+                # Normalize v to [0, 1] or [-1, 1] for the coupling
+                # v_norm = (self.neurons.v - self.neurons.El) / (self.neurons.Vt - self.neurons.El)
+                # For now, let's just use a proxy:
+                # I_input = sum(J * spikes) ...
                 
-            elif opcode == OpCode.LDH:
-                # Load h vector element: LDH i value
-                i = instruction.get("i")
-                val = instruction.get("val")
-                h[i] = val
+                # Since we don't have a full spike monitor inside the loop easily without lag,
+                # let's use a continuous approximation for the "field" effect
                 
-            elif opcode == OpCode.SIG:
-                # Update noise level: SIG value
-                val = instruction.get("val")
-                G.sigma = val * brian2.mV
+                # s = (self.neurons.v > -60*b2.mV).astype(float) # Soft threshold
                 
-            elif opcode == OpCode.RUN:
-                # Run simulation: RUN duration_ms
-                duration = instruction.get("duration") * brian2.ms
+                # Let's use the raw potential for coupling (Gap Junction style approximation)
+                # I_rec = J @ v
                 
-                @brian2.network_operation(dt=10*brian2.ms)
-                def update_kernel():
-                    # Simple feedback: I_kernel ~ J*s + h
-                    # Here we need a mapping from voltage/spikes to state 's'.
-                    # For simple Ising machines, s often relates to firing rate or voltage.
-                    # Let's assume a simple linear readout for now or just placeholder logic
-                    # as the prompt says "calcula o feedback I_kernel = J*s + h"
-                    # We need to define 's'. Let's assume s is based on recent spiking or voltage.
-                    # For this implementation, let's use normalized voltage as a proxy for continuous state
-                    # or just 0.
-                    # A common approach in neuromorphic Ising is s = (v - v_threshold/2) or similar.
-                    # Let's use a placeholder 's' derived from v for now.
-                    s = (G.v - El) / (Vt - El) # Normalized roughly 0 to 1
-                    # Convert to dimensionless for matrix mult, then scale to current
-                    # This is a critical physics detail. 
-                    # Prompt says: "calcula o feedback I_kernel = J*s + h"
-                    # I will implement the matrix multiplication.
-                    # We need to ensure units match. J and h should result in current.
-                    # Let's assume J and h are in units that produce Amps when multiplied.
-                    # Or we introduce a scaling factor.
-                    # Given the prompt is specific about the equation but not the units of J/h,
-                    # I will assume J/h result in nA.
-                    
-                    # s calculation (vectorized)
-                    # Using G.v directly (with units)
-                    # We need to strip units for numpy dot product usually
-                    v_vals = G.v / brian2.volt
-                    s_vals = v_vals # simplified state
-                    
-                    # Feedback calculation
-                    # J is (N,N), s is (N,) -> (N,)
-                    # h is (N,)
-                    # I_out = J @ s + h
-                    # We assume J/h are scaled to produce nA
-                    feedback = (np.dot(J, s_vals) + h) * brian2.nA 
-                    G.I_kernel = feedback
-
-                net.add(update_kernel)
-                net.run(duration)
-                net.remove(update_kernel) # Clean up for next run if any
+                # BUT, strictly speaking for PUBO/Ising:
+                # We want to minimize E. The network dynamics should follow the gradient.
+                # The user asked for "apply matrix J and vector h".
                 
-            elif opcode == OpCode.REA:
-                # Read state
-                # Return average voltage or similar
-                final_state = np.array(G.v / brian2.mV)
+                # Let's implement a simple linear feedback:
+                # I_input = J @ (v - El) + h
                 
-        return final_state
+                # We need to handle units carefully.
+                # J elements should be conductances or currents per volt?
+                # The user said "normalize weights to dynamic range (approx +/- 1.5 nA)".
+                # So J @ state should result in Current.
+                
+                # Let's assume 'state' is binary 0/1 based on recent spiking,
+                # OR 'state' is the instantaneous probability.
+                
+                # For this implementation, let's assume 'state' is derived from v
+                # s = clip((v - El) / (Vt - El), 0, 1)
+                
+                v_raw = self.neurons.v / b2.volt
+                el_raw = self.neurons.El / b2.volt
+                vt_raw = self.neurons.Vt / b2.volt
+                
+                s = np.clip((v_raw - el_raw) / (vt_raw - el_raw), 0, 1)
+                
+                # I_input = J @ s + h
+                # We assume J and h are already scaled to produce Amperes when multiplied by s
+                
+                currents = (self.J @ s + self.h) * b2.amp
+                self.neurons.I_input = currents
+                
+        self.network.add(feedback_loop)
+        
+    def _run_simulation(self, duration: float):
+        """Run the simulation."""
+        if self.network:
+            self.network.run(duration * b2.second)

@@ -1,28 +1,22 @@
 """
-Base problem module.
+Problem Base Module.
+
+Defines the interface for problems solvable by KOPPU.
 """
+
 from abc import ABC, abstractmethod
-from typing import List, Tuple
+import numpy as np
 
 class PUBOProblem(ABC):
     """
-    Abstract base class for PUBO (Polynomial Unconstrained Binary Optimization) problems.
-
-    Attributes:
-        n_variables (int): The number of variables in the problem.
-        terms (List[Tuple[List[int], float]]): The terms of the objective function.
+    Polynomial Unconstrained Binary Optimization (PUBO) Problem.
     """
-
-    def __init__(self, n_variables: int):
-        self.n_variables = n_variables
-        self.terms = []
-
-    def add_term(self, indices: List[int], value: float):
-        """
-        Adds a term to the objective function.
-
-        Args:
-            indices (List[int]): The indices of the variables in the term.
-            value (float): The coefficient of the term.
-        """
-        self.terms.append((indices, value))
+    
+    def __init__(self):
+        self.J: np.ndarray = np.array([])
+        self.h: np.ndarray = np.array([])
+        
+    @abstractmethod
+    def to_hamiltonian(self):
+        """Convert the problem to Hamiltonian form (J, h)."""
+        pass

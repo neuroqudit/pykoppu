@@ -1,58 +1,60 @@
 """
-Biocompiler implementation.
+BioCompiler Module.
+
+This module compiles high-level problem descriptions into BioASM instructions.
 """
-from typing import List, Dict, Any
+
+from typing import List, Any
+from .isa import OpCode, Instruction
 
 class BioCompiler:
     """
-    Compiler for translating problems into bio-instructions.
+    Compiler for translating problems into BioASM instructions.
     """
-
-    def compile(self, problem: Any) -> List[Dict[str, Any]]:
-        """
-        Compiles a problem into a list of instructions.
-
-        Args:
-            problem (Any): The problem instance to compile.
-
-        Returns:
-            List[Dict[str, Any]]: A list of instruction dictionaries.
-        """
-        from .isa import OpCode
+    
+    def __init__(self):
+        pass
         
+    def compile(self, problem: Any, strategy: str = "annealing") -> List[Instruction]:
+        """
+        Compile a problem into a sequence of instructions.
+        
+        Args:
+            problem: The problem instance (must have J and h attributes).
+            strategy (str): The compilation strategy. Defaults to "annealing".
+            
+        Returns:
+            List[Instruction]: The sequence of BioASM instructions.
+        """
         instructions = []
         
-        # 1. Allocation
-        instructions.append({"op": OpCode.ALC, "size": problem.n_variables})
+        # 1. Allocate resources
+        # Assuming problem has 'num_variables' or we infer from J
+        num_vars = problem.J.shape[0]
+        instructions.append(Instruction(OpCode.ALC, [num_vars]))
         
-        # 2. Problem Terms
-        for indices, value in problem.terms:
-            if len(indices) == 1:
-                # Linear term -> LDH
-                # LDH i value
-                instructions.append({
-                    "op": OpCode.LDH,
-                    "i": indices[0],
-                    "val": value
-                })
-            elif len(indices) == 2:
-                # Quadratic term -> LDJ
-                # LDJ i j value
-                instructions.append({
-                    "op": OpCode.LDJ,
-                    "i": indices[0],
-                    "j": indices[1],
-                    "val": value
-                })
+        # 2. Load Hamiltonian (J and h)
+        # We pass the raw data as operands (simplified for this implementation)
+        instructions.append(Instruction(OpCode.LDJ, [problem.J.tolist()]))
+        instructions.append(Instruction(OpCode.LDH, [problem.h.tolist()]))
+        
+        # 3. Apply Strategy
+        if strategy == "annealing":
+            # Generate SIG instructions: High -> Medium -> Low
+            # Values are illustrative noise levels in Volts
+            noise_schedule = [5.0e-3, 2.0e-3, 0.5e-3] # 5mV, 2mV, 0.5mV
+            
+            for sigma in noise_schedule:
+                instructions.append(Instruction(OpCode.SIG, [sigma]))
+                # Run for a certain duration (e.g., 100ms) for each noise level
+                instructions.append(Instruction(OpCode.RUN, [100e-3]))
                 
-        # 3. Execution Sequence
-        # SIG 2.0
-        instructions.append({"op": OpCode.SIG, "val": 2.0})
-        
-        # RUN 1000
-        instructions.append({"op": OpCode.RUN, "duration": 1000})
-        
-        # REA (Readout)
-        instructions.append({"op": OpCode.REA})
+        else:
+            # Default single run
+            instructions.append(Instruction(OpCode.SIG, [2.0e-3]))
+            instructions.append(Instruction(OpCode.RUN, [500e-3]))
+            
+        # 4. Read Result
+        instructions.append(Instruction(OpCode.RD, []))
         
         return instructions

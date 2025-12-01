@@ -1,5 +1,9 @@
 """
-pykoppu: SDK for KOPPU (K-dimensional Organoid Probabilistic Processing Unit).
+KOPPU (K-dimensional Organoid Probabilistic Processing Unit) SDK.
 """
 
-# Factory exports will go here
+from .opu import OPU
+from .oos import Process
+from .problems import MaxCut
+
+__all__ = ["OPU", "Process", "MaxCut"]

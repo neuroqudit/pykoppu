@@ -1,19 +1,28 @@
 """
-Electrophysiology module.
+Electrophysiology Package Initialization.
 """
+
+from .base import ElectrophysiologyDriver
 from .brian2 import Brian2Driver
 
-def connect(driver_type: str, opu):
+def connect(driver_name: str = "brian2", **kwargs) -> ElectrophysiologyDriver:
     """
-    Factory method to connect to a driver.
-
+    Factory function to connect to a driver.
+    
     Args:
-        driver_type (str): The type of driver to connect to ("brian2").
-        opu (OPU): The OPU instance.
-
+        driver_name (str): Name of the driver ("brian2").
+        **kwargs: Arguments for the driver constructor.
+        
     Returns:
-        BaseDriver: The driver instance.
+        ElectrophysiologyDriver: The connected driver.
     """
-    if driver_type == "brian2":
-        return Brian2Driver(opu)
-    return None
+    if driver_name == "brian2":
+        from ..opu.device import OPU
+        opu = kwargs.get("opu", OPU())
+        driver = Brian2Driver(opu=opu)
+        driver.connect()
+        return driver
+    else:
+        raise ValueError(f"Unknown driver: {driver_name}")
+
+__all__ = ["ElectrophysiologyDriver", "Brian2Driver", "connect"]

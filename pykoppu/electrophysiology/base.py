@@ -1,22 +1,37 @@
 """
-Base driver module.
+Electrophysiology Base Module.
+
+Defines the interface for interacting with the biological or simulated hardware.
 """
+
 from abc import ABC, abstractmethod
+from typing import List, Any
+from ..biocompiler.isa import Instruction
 
-class BaseDriver(ABC):
+class ElectrophysiologyDriver(ABC):
     """
-    Abstract base class for electrophysiology drivers.
+    Abstract Base Class for Electrophysiology Drivers.
     """
-
-    def __init__(self, opu):
-        self.opu = opu
-
+    
     @abstractmethod
-    def execute_program(self, bioasm):
+    def connect(self):
+        """Establish connection to the device."""
+        pass
+        
+    @abstractmethod
+    def execute(self, instructions: List[Instruction]) -> Any:
         """
-        Executes a bio-assembly program.
-
+        Execute a sequence of BioASM instructions.
+        
         Args:
-            bioasm: The bio-assembly program to execute.
+            instructions (List[Instruction]): The instructions to execute.
+            
+        Returns:
+            Any: The result of the execution (e.g., final state).
         """
+        pass
+    
+    @abstractmethod
+    def disconnect(self):
+        """Close connection to the device."""
         pass

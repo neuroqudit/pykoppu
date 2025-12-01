@@ -1,3 +1,7 @@
 """
-OOS (Organoid Operating System) module.
+OOS Package Initialization.
 """
+
+from .process import Process
+
+__all__ = ["Process"]

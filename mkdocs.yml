@@ -1,3 +1,21 @@
-site_name: KOPPU Documentation
+site_name: KOPPU
 theme:
   name: material
+  palette:
+    primary: purple
+    accent: teal
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [.]
+
+nav:
+  - Home: index.md
+  - API Reference:
+      - OPU: api/opu.md
+      - BioCompiler: api/biocompiler.md
+      - Electrophysiology: api/electrophysiology.md
+      - Problems: api/problems.md

@@ -1,6 +1,4 @@
+brian2>=2.5
+networkx
 numpy
 scipy
-networkx
-brian2
-mkdocs
-matplotlib
