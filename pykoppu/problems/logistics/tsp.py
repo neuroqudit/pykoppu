@@ -71,9 +71,9 @@ class TSP(PUBOProblem):
         
         for i in range(N):
             for t in range(N):
-                # Linear term: -A
+                # Linear term: -A in Hamiltonian => +A in Bias (since E = -h^T x)
                 u = idx(i, t)
-                self.h[u] += -A
+                self.h[u] += A
                 
                 # Quadratic term: A for all pairs (t, t') with t != t'
                 for t_prime in range(N):
@@ -88,9 +88,9 @@ class TSP(PUBOProblem):
         
         for t in range(N):
             for i in range(N):
-                # Linear term: -A
+                # Linear term: -A in Hamiltonian => +A in Bias
                 u = idx(i, t)
-                self.h[u] += -A
+                self.h[u] += A
                 
                 # Quadratic term: A for all pairs (i, j) with i != j
                 for j in range(N):

@@ -98,8 +98,8 @@ class SAT3(PUBOProblem):
         # H = - sum y_i + P * sum_{(i,j) in E} y_i y_j
         P = self.penalty
         
-        # Linear term: -1 for each node (to encourage selecting nodes)
-        self.h[:] = -1.0
+        # Linear term: -1 for each node in Hamiltonian => +1 in Bias
+        self.h[:] = 1.0
         
         # Quadratic term: P for each edge (penalty for selecting connected nodes)
         for u, v in self.graph.edges:
