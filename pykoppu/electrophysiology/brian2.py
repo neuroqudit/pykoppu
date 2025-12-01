@@ -189,7 +189,15 @@ class Brian2Driver(ElectrophysiologyDriver):
                 # Read state (final membrane potentials)
                 if self.neurons:
                     # Return tuple: (final_state, energy_trace, spike_data)
-                    final_state = np.array(self.neurons.v[:])
+                    # Normalize final state to [0, 1]
+                    v_raw = np.array(self.neurons.v[:])
+                    el_raw = self.neurons.El[0] / b2.volt
+                    vt_raw = self.neurons.Vt[0] / b2.volt
+                    
+                    # s = (v - El) / (Vt - El) clipped to [0, 1]
+                    s = np.clip((v_raw - el_raw) / (vt_raw - el_raw), 0, 1)
+                    
+                    final_state = s
                     energy_history = list(self.energy_trace)
                     spike_data = (np.array(self.spike_monitor.t/b2.ms), np.array(self.spike_monitor.i))
                     

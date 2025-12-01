@@ -60,7 +60,8 @@ class SimulationResult:
         n = len(self.solution)
         if n <= 50:
             sns.barplot(x=list(range(n)), y=self.solution, hue=list(range(n)), ax=axes[1], palette="viridis", legend=False)
-            axes[1].set_ylabel("State Value")
+            axes[1].set_ylabel("Excitability Probability")
+            axes[1].set_xlabel("Neuron Index")
             axes[1].set_title("Final State")
         else:
             sns.heatmap(self.solution.reshape(1, -1), ax=axes[1], cmap="viridis", cbar=True)
