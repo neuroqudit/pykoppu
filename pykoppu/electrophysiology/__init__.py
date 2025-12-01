@@ -5,12 +5,15 @@ Electrophysiology Package Initialization.
 from .base import ElectrophysiologyDriver
 from .brian2 import Brian2Driver
 
-def connect(driver_name: str = "brian2", **kwargs) -> ElectrophysiologyDriver:
+from typing import Any, Optional
+
+def connect(driver_name: str = "brian2", opu: Optional[Any] = None, **kwargs) -> ElectrophysiologyDriver:
     """
     Factory function to connect to a driver.
     
     Args:
         driver_name (str): Name of the driver ("brian2").
+        opu (OPU): The OPU instance.
         **kwargs: Arguments for the driver constructor.
         
     Returns:
@@ -18,7 +21,8 @@ def connect(driver_name: str = "brian2", **kwargs) -> ElectrophysiologyDriver:
     """
     if driver_name == "brian2":
         from ..opu.device import OPU
-        opu = kwargs.get("opu", OPU())
+        if opu is None:
+            opu = kwargs.get("opu", OPU())
         driver = Brian2Driver(opu=opu)
         driver.connect()
         return driver

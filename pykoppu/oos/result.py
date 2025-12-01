@@ -59,7 +59,7 @@ class SimulationResult:
         # Visualize as a bar chart or heatmap depending on size
         n = len(self.solution)
         if n <= 50:
-            sns.barplot(x=list(range(n)), y=self.solution, ax=axes[1], palette="viridis")
+            sns.barplot(x=list(range(n)), y=self.solution, hue=list(range(n)), ax=axes[1], palette="viridis", legend=False)
             axes[1].set_ylabel("State Value")
             axes[1].set_title("Final State")
         else:
