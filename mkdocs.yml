@@ -18,4 +18,4 @@ nav:
       - OPU: api/opu.md
       - BioCompiler: api/biocompiler.md
       - Electrophysiology: api/electrophysiology.md
-      - Problems: api/problems.md
+      - Problems Library: api/problems.md

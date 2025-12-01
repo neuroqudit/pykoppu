@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pykoppu"
-version = "0.1.0-alpha"
+version = "0.2.0-alpha"
 description = "SDK for KOPPU (K-dimensional Organoid Probabilistic Processing Unit)"
 readme = "README.md"
 requires-python = ">=3.8"

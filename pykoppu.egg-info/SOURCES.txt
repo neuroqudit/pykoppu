@@ -30,8 +30,13 @@ pykoppu/opu/kernel.py
 pykoppu/opu/pobit.py
 pykoppu/problems/__init__.py
 pykoppu/problems/base.py
+pykoppu/problems/finance/__init__.py
+pykoppu/problems/finance/portfolio.py
 pykoppu/problems/graph/__init__.py
 pykoppu/problems/graph/maxcut.py
+pykoppu/problems/logistics/__init__.py
+pykoppu/problems/logistics/knapsack.py
+pykoppu/problems/logistics/tsp.py
 tests/.gitkeep
 tests/test_sanity.py
 tests/validate_opu.py

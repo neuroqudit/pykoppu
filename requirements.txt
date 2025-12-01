@@ -2,3 +2,4 @@ brian2>=2.5
 networkx
 numpy
 scipy
+matplotlib
