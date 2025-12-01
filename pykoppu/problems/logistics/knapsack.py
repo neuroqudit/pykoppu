@@ -101,9 +101,48 @@ class Knapsack(PUBOProblem):
                 
         valid = total_weight <= self.capacity
         
-        return {
-            "valid": valid,
-            "total_value": total_value,
-            "total_weight": total_weight,
             "capacity": self.capacity
         }
+
+    def plot(self, result: Any) -> None:
+        """
+        Visualize Knapsack solution.
+        """
+        import matplotlib.pyplot as plt
+        import seaborn as sns
+        
+        # Identify selected items
+        x = (result.solution > 0.5).astype(int)
+        selected_indices = [i for i, val in enumerate(x) if val == 1]
+        
+        if not selected_indices:
+            print("No items selected.")
+            return
+
+        selected_items = [self.items[i] for i in selected_indices]
+        names = [item['name'] for item in selected_items]
+        weights = [item['weight'] for item in selected_items]
+        values = [item['value'] for item in selected_items]
+        
+        # Create a figure with 2 subplots
+        fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+        
+        # Plot Weights
+        sns.barplot(x=names, y=weights, ax=axes[0], palette="Blues_d", hue=names, legend=False)
+        axes[0].axhline(y=self.capacity, color='r', linestyle='--', label='Capacity')
+        axes[0].set_title("Selected Items: Weights")
+        axes[0].set_ylabel("Weight")
+        
+        # Plot Values
+        sns.barplot(x=names, y=values, ax=axes[1], palette="Greens_d", hue=names, legend=False)
+        axes[1].set_title("Selected Items: Values")
+        axes[1].set_ylabel("Value")
+        
+        total_weight = result.metrics.get('total_weight', 0)
+        total_value = result.metrics.get('total_value', 0)
+        valid = result.metrics.get('valid', False)
+        status = "VALID" if valid else "INVALID (Over Capacity)"
+        
+        plt.suptitle(f"Knapsack Solution: {status}\nTotal Value: {total_value} | Total Weight: {total_weight}/{self.capacity}")
+        plt.tight_layout()
+        plt.show()

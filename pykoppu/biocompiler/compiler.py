@@ -15,13 +15,14 @@ class BioCompiler:
     def __init__(self):
         pass
         
-    def compile(self, problem: Any, strategy: str = "annealing") -> List[Instruction]:
+    def compile(self, problem: Any, strategy: str = "annealing", duration: float = 1000.0) -> List[Instruction]:
         """
         Compile a problem into a sequence of instructions.
         
         Args:
             problem: The problem instance (must have J and h attributes).
             strategy (str): The compilation strategy. Defaults to "annealing".
+            duration (float): Total simulation duration in milliseconds. Defaults to 1000.0.
             
         Returns:
             List[Instruction]: The sequence of BioASM instructions.
@@ -39,20 +40,25 @@ class BioCompiler:
         instructions.append(Instruction(OpCode.LDH, [problem.h.tolist()]))
         
         # 3. Apply Strategy
+        # Convert duration from ms to seconds
+        total_duration_sec = duration / 1000.0
+        
         if strategy == "annealing":
             # Generate SIG instructions: High -> Medium -> Low
             # Increased noise levels to promote activity and break symmetry
             noise_schedule = [10.0e-3, 5.0e-3, 2.0e-3] # 10mV, 5mV, 2mV
             
+            # Divide total duration equally among steps
+            step_duration = total_duration_sec / len(noise_schedule)
+            
             for sigma in noise_schedule:
                 instructions.append(Instruction(OpCode.SIG, [sigma]))
-                # Run for a certain duration (e.g., 100ms) for each noise level
-                instructions.append(Instruction(OpCode.RUN, [100e-3]))
+                instructions.append(Instruction(OpCode.RUN, [step_duration]))
                 
         else:
             # Default single run
             instructions.append(Instruction(OpCode.SIG, [2.0e-3]))
-            instructions.append(Instruction(OpCode.RUN, [500e-3]))
+            instructions.append(Instruction(OpCode.RUN, [total_duration_sec]))
             
         # 4. Read Result
         instructions.append(Instruction(OpCode.RD, []))

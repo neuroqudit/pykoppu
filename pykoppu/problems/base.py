@@ -37,3 +37,13 @@ class PUBOProblem(ABC):
         """
         # Default implementation returns empty metrics
         return {}
+
+    @abstractmethod
+    def plot(self, result: Any) -> None:
+        """
+        Visualize the solution.
+        
+        Args:
+            result: The simulation result object.
+        """
+        raise NotImplementedError

@@ -15,16 +15,18 @@ class Process:
     Represents a computing process on the OPU.
     """
     
-    def __init__(self, problem: Any, backend: str = "brian2"):
+    def __init__(self, problem: Any, backend: str = "brian2", t: float = 1000.0):
         """
         Initialize a process.
         
         Args:
             problem: The problem instance to solve.
             backend (str): The backend driver to use.
+            t (float): Total simulation duration in milliseconds. Defaults to 1000.0.
         """
         self.problem = problem
         self.backend = backend
+        self.t = t
         self.compiler = BioCompiler()
         self.driver = connect(backend)
         
@@ -36,7 +38,7 @@ class Process:
             SimulationResult: The result of the computation.
         """
         # 1. Compile
-        instructions = self.compiler.compile(self.problem)
+        instructions = self.compiler.compile(self.problem, duration=self.t)
         
         # 2. Execute
         try:

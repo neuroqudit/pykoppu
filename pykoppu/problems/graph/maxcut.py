@@ -170,3 +170,31 @@ class MaxCut(PUBOProblem):
                 
         accuracy = (cut_edges / total_edges) * 100 if total_edges > 0 else 0.0
         return {"accuracy": accuracy, "cut_size": cut_edges}
+
+    def plot(self, result: Any) -> None:
+        """
+        Visualize MaxCut solution.
+        """
+        import matplotlib.pyplot as plt
+        
+        plt.figure(figsize=(8, 6))
+        pos = nx.spring_layout(self.graph, seed=42)
+        
+        # Color nodes based on solution
+        # result.solution is the state vector
+        node_colors = ['red' if x > 0.5 else 'blue' for x in result.solution]
+        
+        nx.draw(
+            self.graph, 
+            pos, 
+            with_labels=True, 
+            node_color=node_colors, 
+            edge_color='gray', 
+            node_size=500, 
+            font_color='white'
+        )
+        
+        cut_size = result.metrics.get('cut_size', 0)
+        accuracy = result.metrics.get('accuracy', 0.0)
+        plt.title(f"MaxCut Solution (Red vs Blue)\nCut Size: {cut_size} | Accuracy: {accuracy:.2f}%")
+        plt.show()
