@@ -41,8 +41,8 @@ class BioCompiler:
         # 3. Apply Strategy
         if strategy == "annealing":
             # Generate SIG instructions: High -> Medium -> Low
-            # Values are illustrative noise levels in Volts
-            noise_schedule = [5.0e-3, 2.0e-3, 0.5e-3] # 5mV, 2mV, 0.5mV
+            # Increased noise levels to promote activity and break symmetry
+            noise_schedule = [10.0e-3, 5.0e-3, 2.0e-3] # 10mV, 5mV, 2mV
             
             for sigma in noise_schedule:
                 instructions.append(Instruction(OpCode.SIG, [sigma]))

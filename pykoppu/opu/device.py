@@ -71,7 +71,7 @@ class OPU:
                 El=-70e-3,    # -70 mV
                 Vt=-50e-3,    # -50 mV
                 Vr=-70e-3,    # -70 mV
-                I_offset=0.36e-9, # 0.36 nA
+                I_offset=0.39e-9, # 0.39 nA (Increased for higher activity)
                 sigma=2.0e-3  # 2.0 mV
             )
         else:
