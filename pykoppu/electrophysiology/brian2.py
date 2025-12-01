@@ -115,6 +115,11 @@ class Brian2Driver(ElectrophysiologyDriver):
         # Create Network
         self.network = b2.Network(self.neurons)
         
+        # Telemetry
+        self.spike_monitor = b2.SpikeMonitor(self.neurons)
+        self.network.add(self.spike_monitor)
+        self.energy_trace = [] # Store energy at each step
+        
         # Add feedback loop
         @b2.network_operation(dt=1*b2.ms)
         def feedback_loop():
@@ -131,22 +136,12 @@ class Brian2Driver(ElectrophysiologyDriver):
                 
                 # 2. Compute Feedback Current
                 # I_fb = J @ s + h
-                # We assume J and h are dimensionless or scaled to produce Amperes
-                # But to ensure stability, we normalize the output current
-                
                 raw_current = (self.J @ s + self.h)
                 
                 # 3. Normalize Feedback
                 # Target range: +/- 1.5 nA
                 target_range = 1.5e-9
                 
-                # We apply a scaling factor if the current is too large
-                # Or we just clip it?
-                # The prompt says: "Implement automatic normalization so feedback J*s doesn't saturate neurons"
-                # "Keep injection current in range +/- 1.5 nA"
-                
-                # Let's clip it to be safe, assuming J was already somewhat normalized
-                # But better to scale it if it exceeds the range to preserve relative structure
                 max_abs_current = np.max(np.abs(raw_current))
                 if max_abs_current > target_range:
                     scale = target_range / max_abs_current
@@ -154,9 +149,50 @@ class Brian2Driver(ElectrophysiologyDriver):
                 
                 self.neurons.I_input = raw_current * b2.amp
                 
+                # 4. Telemetry: Calculate Energy
+                # E = -0.5 * s^T J s - h^T s
+                # Note: This is an approximation using the continuous state 's'
+                energy = -0.5 * s.T @ self.J @ s - self.h.T @ s
+                self.energy_trace.append(energy)
+                
         self.network.add(feedback_loop)
         
     def _run_simulation(self, duration: float):
         """Run the simulation."""
         if self.network:
             self.network.run(duration * b2.second)
+            
+    def execute(self, instructions: List[Instruction]) -> Any:
+        """
+        Execute BioASM instructions using Brian2.
+        """
+        results = {}
+        
+        for instr in instructions:
+            if instr.opcode == OpCode.ALC:
+                self._allocate(instr.operands[0])
+            elif instr.opcode == OpCode.LDJ:
+                self.J = np.array(instr.operands[0])
+            elif instr.opcode == OpCode.LDH:
+                self.h = np.array(instr.operands[0])
+            elif instr.opcode == OpCode.SIG:
+                self.sigma = float(instr.operands[0])
+                # Update noise in the neuron model dynamically
+                if self.neurons:
+                    # We need to access the variable in the running network
+                    # Brian2 allows setting variables directly
+                    self.neurons.sigma_noise = self.sigma * b2.volt
+            elif instr.opcode == OpCode.RUN:
+                duration = float(instr.operands[0])
+                self._run_simulation(duration)
+            elif instr.opcode == OpCode.RD:
+                # Read state (final membrane potentials)
+                if self.neurons:
+                    # Return tuple: (final_state, energy_trace, spike_data)
+                    final_state = np.array(self.neurons.v[:])
+                    energy_history = list(self.energy_trace)
+                    spike_data = (np.array(self.spike_monitor.t/b2.ms), np.array(self.spike_monitor.i))
+                    
+                    results = (final_state, energy_history, spike_data)
+                
+        return results

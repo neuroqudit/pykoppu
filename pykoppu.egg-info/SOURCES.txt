@@ -24,6 +24,7 @@ pykoppu/electrophysiology/brian2.py
 pykoppu/electrophysiology/intan.py
 pykoppu/oos/__init__.py
 pykoppu/oos/process.py
+pykoppu/oos/result.py
 pykoppu/opu/__init__.py
 pykoppu/opu/device.py
 pykoppu/opu/kernel.py

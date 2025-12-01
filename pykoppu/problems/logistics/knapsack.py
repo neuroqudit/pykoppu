@@ -83,3 +83,27 @@ class Knapsack(PUBOProblem):
                 val = -2 * P * weights[i] * weights[j]
                 self.J[i, j] = val
                 self.J[j, i] = val
+
+    def evaluate(self, solution: np.ndarray) -> Dict[str, Any]:
+        """
+        Evaluate Knapsack solution.
+        """
+        # Binarize solution
+        x = (solution > 0.5).astype(int)
+        
+        total_weight = 0.0
+        total_value = 0.0
+        
+        for i, item in enumerate(self.items):
+            if x[i] == 1:
+                total_weight += item['weight']
+                total_value += item['value']
+                
+        valid = total_weight <= self.capacity
+        
+        return {
+            "valid": valid,
+            "total_value": total_value,
+            "total_weight": total_weight,
+            "capacity": self.capacity
+        }

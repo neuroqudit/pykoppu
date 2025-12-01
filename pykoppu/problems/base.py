@@ -17,6 +17,22 @@ class PUBOProblem(ABC):
         self.h: np.ndarray = np.array([])
         
     @abstractmethod
-    def to_hamiltonian(self):
-        """Convert the problem to Hamiltonian form (J, h)."""
-        pass
+    def to_hamiltonian(self) -> None:
+        """
+        Convert the problem to Hamiltonian form (J, h).
+        Must be implemented by subclasses.
+        """
+        raise NotImplementedError
+        
+    def evaluate(self, solution: Any) -> Dict[str, Any]:
+        """
+        Evaluate the quality of a solution.
+        
+        Args:
+            solution: The solution vector.
+            
+        Returns:
+            Dict[str, Any]: Metrics dictionary.
+        """
+        # Default implementation returns empty metrics
+        return {}

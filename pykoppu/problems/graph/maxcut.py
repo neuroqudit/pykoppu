@@ -149,3 +149,23 @@ class MaxCut(PUBOProblem):
             i, j = node_to_idx[u], node_to_idx[v]
             self.J[i, j] = -1.0
             self.J[j, i] = -1.0
+            
+    def evaluate(self, solution: np.ndarray) -> Dict[str, Any]:
+        """
+        Calculate MaxCut quality (percentage of edges cut).
+        """
+        # Binarize solution (threshold at 0.5)
+        x = (solution > 0.5).astype(int)
+        
+        cut_edges = 0
+        total_edges = self.graph.number_of_edges()
+        node_list = list(self.graph.nodes)
+        
+        for u, v in self.graph.edges:
+            i = node_list.index(u)
+            j = node_list.index(v)
+            if x[i] != x[j]:
+                cut_edges += 1
+                
+        accuracy = (cut_edges / total_edges) * 100 if total_edges > 0 else 0.0
+        return {"accuracy": accuracy, "cut_size": cut_edges}

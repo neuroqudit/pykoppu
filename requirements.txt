@@ -3,3 +3,6 @@ networkx
 numpy
 scipy
 matplotlib
+seaborn
+jupyter
+notebook
