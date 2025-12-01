@@ -171,7 +171,7 @@ class MaxCut(PUBOProblem):
         accuracy = (cut_edges / total_edges) * 100 if total_edges > 0 else 0.0
         return {"accuracy": accuracy, "cut_size": cut_edges}
 
-    def plot(self, result: Any) -> None:
+    def plot(self, result: Any, threshold: float = 0.5) -> None:
         """
         Visualize MaxCut solution.
         """
@@ -180,9 +180,10 @@ class MaxCut(PUBOProblem):
         plt.figure(figsize=(8, 6))
         pos = nx.spring_layout(self.graph, seed=42)
         
-        # Color nodes based on solution
-        # result.solution is the state vector
-        node_colors = ['red' if x > 0.5 else 'blue' for x in result.solution]
+        # Color nodes based on solution and threshold
+        # result.solution is the state vector (normalized [0, 1])
+        x = (result.solution >= threshold).astype(int)
+        node_colors = ['red' if val == 1 else 'blue' for val in x]
         
         nx.draw(
             self.graph, 
@@ -194,7 +195,18 @@ class MaxCut(PUBOProblem):
             font_color='white'
         )
         
-        cut_size = result.metrics.get('cut_size', 0)
-        accuracy = result.metrics.get('accuracy', 0.0)
-        plt.title(f"MaxCut Solution (Red vs Blue)\nCut Size: {cut_size} | Accuracy: {accuracy:.2f}%")
+        # Recalculate metrics based on threshold
+        cut_edges = 0
+        total_edges = self.graph.number_of_edges()
+        node_list = list(self.graph.nodes)
+        
+        for u, v in self.graph.edges:
+            i = node_list.index(u)
+            j = node_list.index(v)
+            if x[i] != x[j]:
+                cut_edges += 1
+                
+        accuracy = (cut_edges / total_edges) * 100 if total_edges > 0 else 0.0
+        
+        plt.title(f"MaxCut Solution (Red vs Blue)\nThreshold: {threshold} | Cut Size: {cut_edges} | Accuracy: {accuracy:.2f}%")
         plt.show()

@@ -40,11 +40,12 @@ class PUBOProblem(ABC):
         return {}
 
     @abstractmethod
-    def plot(self, result: Any) -> None:
+    def plot(self, result: Any, threshold: float = 0.5) -> None:
         """
         Visualize the solution.
         
         Args:
             result: The simulation result object.
+            threshold (float): Threshold for binarizing the solution. Defaults to 0.5.
         """
         raise NotImplementedError

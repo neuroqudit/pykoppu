@@ -112,25 +112,31 @@ class Knapsack(PUBOProblem):
             "capacity": self.capacity
         }
 
-    def plot(self, result: Any) -> None:
+    def plot(self, result: Any, threshold: float = 0.5) -> None:
         """
         Visualize Knapsack solution.
         """
         import matplotlib.pyplot as plt
         import seaborn as sns
         
-        # Identify selected items
-        x = (result.solution > 0.5).astype(int)
+        # Identify selected items based on threshold
+        x = (result.solution >= threshold).astype(int)
         selected_indices = [i for i, val in enumerate(x) if val == 1]
         
         if not selected_indices:
-            print("No items selected.")
+            print(f"No items selected (Threshold: {threshold}).")
             return
 
         selected_items = [self.items[i] for i in selected_indices]
         names = [item['name'] for item in selected_items]
         weights = [item['weight'] for item in selected_items]
         values = [item['value'] for item in selected_items]
+        
+        # Recalculate metrics
+        total_weight = sum(weights)
+        total_value = sum(values)
+        valid = total_weight <= self.capacity
+        status = "VALID" if valid else "INVALID (Over Capacity)"
         
         # Create a figure with 2 subplots
         fig, axes = plt.subplots(1, 2, figsize=(12, 5))
@@ -146,11 +152,6 @@ class Knapsack(PUBOProblem):
         axes[1].set_title("Selected Items: Values")
         axes[1].set_ylabel("Value")
         
-        total_weight = result.metrics.get('total_weight', 0)
-        total_value = result.metrics.get('total_value', 0)
-        valid = result.metrics.get('valid', False)
-        status = "VALID" if valid else "INVALID (Over Capacity)"
-        
-        plt.suptitle(f"Knapsack Solution: {status}\nTotal Value: {total_value} | Total Weight: {total_weight}/{self.capacity}")
+        plt.suptitle(f"Knapsack Solution: {status}\nThreshold: {threshold} | Total Value: {total_value} | Total Weight: {total_weight}/{self.capacity}")
         plt.tight_layout()
         plt.show()
