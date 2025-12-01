@@ -11,9 +11,9 @@ from .base import ElectrophysiologyDriver
 from ..biocompiler.isa import OpCode, Instruction
 from ..opu.device import OPU
 
-class Brian2Driver(ElectrophysiologyDriver):
+class CPUDriver(ElectrophysiologyDriver):
     """
-    Driver for the Brian2-based Digital Twin.
+    Driver for the CPU-based Digital Twin (using Brian2).
     """
     
     def __init__(self, opu: OPU):

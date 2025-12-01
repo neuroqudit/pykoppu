@@ -1,23 +1,23 @@
 """
-Intan Driver Module.
+GPU Driver Module.
 
-Implements the driver for Intan hardware.
+Implements the digital twin driver using GPU acceleration (placeholder).
 """
 
 from typing import List, Any
 from .base import ElectrophysiologyDriver
 from ..biocompiler.isa import Instruction
 
-class INTANDriver(ElectrophysiologyDriver):
+class GPUDriver(ElectrophysiologyDriver):
     """
-    Driver for Intan hardware.
+    Driver for the GPU-accelerated Digital Twin.
     """
     
     def __init__(self, opu: Any):
         self.opu = opu
         
     def connect(self):
-        """Initialize the Intan connection."""
+        """Initialize the GPU environment."""
         pass
         
     def disconnect(self):
@@ -26,7 +26,7 @@ class INTANDriver(ElectrophysiologyDriver):
         
     def execute(self, instructions: List[Instruction]) -> Any:
         """
-        Execute BioASM instructions using Intan.
+        Execute BioASM instructions using GPU.
         """
         # Placeholder implementation
         return {}
