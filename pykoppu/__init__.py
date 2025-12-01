@@ -2,8 +2,10 @@
 KOPPU (K-dimensional Organoid Probabilistic Processing Unit) SDK.
 """
 
-from .opu import OPU
-from .oos import Process
-from .problems import MaxCut
+from . import opu
+from . import oos
+from . import problems
+from . import electrophysiology
+from . import biocompiler
 
-__all__ = ["OPU", "Process", "MaxCut"]
+__all__ = ["opu", "oos", "problems", "electrophysiology", "biocompiler"]

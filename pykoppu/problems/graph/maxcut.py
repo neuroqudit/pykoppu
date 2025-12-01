@@ -6,6 +6,7 @@ Implements the MaxCut problem and its conversion to Hamiltonian.
 
 import networkx as nx
 import numpy as np
+from typing import Any, Dict
 from ..base import PUBOProblem
 
 class MaxCut(PUBOProblem):

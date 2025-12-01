@@ -36,14 +36,16 @@ class OPU:
     Represents the physical cartridge containing the organoid and MEA interface.
     """
     
-    def __init__(self, model: str = "lif_critical"):
+    def __init__(self, model: str = "lif_critical", capacity: int = 100):
         """
         Initialize the OPU device.
         
         Args:
             model (str): The biological model to use. Defaults to "lif_critical".
+            capacity (int): The number of neurons/channels available. Defaults to 100.
         """
         self.model = model
+        self.capacity = capacity
         self.specs = self._load_bio_specs(model)
         
     def _load_bio_specs(self, model: str) -> BioSpecs:

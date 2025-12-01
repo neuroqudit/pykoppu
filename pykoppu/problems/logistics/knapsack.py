@@ -4,7 +4,7 @@ Knapsack Problem Module.
 Implements the Knapsack problem as a QUBO.
 """
 
-from typing import List, Dict
+from typing import List, Dict, Any
 import numpy as np
 from ..base import PUBOProblem
 

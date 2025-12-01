@@ -5,6 +5,7 @@ Defines the interface for problems solvable by KOPPU.
 """
 
 from abc import ABC, abstractmethod
+from typing import Any, Dict
 import numpy as np
 
 class PUBOProblem(ABC):
