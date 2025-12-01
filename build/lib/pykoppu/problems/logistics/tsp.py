@@ -143,68 +143,104 @@ class TSP(PUBOProblem):
                     # Correct.
                     
                     self.J[v, u] += dist
+                    
+        # 4. Enforce Start at City 0 (Time 0)
+        # We add a strong bias to x_{0,0} to encourage it to be 1.
+        # The constraints will then force x_{0,t}=0 for t>0 and x_{i,0}=0 for i>0.
+        # Bias should be strong enough to overcome other terms.
+        # A simple heuristic is -2 * A (since A is penalty for constraints).
+        # Actually, since we use +A for inhibition in J, and +A for linear penalty in h (from (sum x - 1)^2 = sum x^2 - 2 sum x + 1 => -2A linear + A quadratic),
+        # Wait, my previous derivation:
+        # H_row = A * (sum x - 1)^2 = A * (sum x^2 + cross_terms - 2 sum x + 1)
+        # Linear term was -A (derived from A * x^2 - 2A * x = -A * x).
+        # Wait, A * x^2 - 2A * x = A * x - 2A * x = -A * x. Correct.
+        # But I changed it to +A in the previous step because I thought "E = -h^T x".
+        # If H_linear = -A * x, and E = -h * x, then h = A. Correct.
+        # So to encourage x_{0,0}=1, we need to lower the energy for x_{0,0}=1.
+        # Current linear energy contribution is -h_{0,0} * 1 = -A.
+        # We want to make it even lower.
+        # Let's add a large value to h_{0,0}.
+        # self.h[idx(0,0)] += A * 2
+        
+        self.h[idx(0, 0)] += A * 2
 
     def plot(self, result: Any, threshold: float = 0.5) -> None:
         """
         Visualize TSP solution.
         """
+        import networkx as nx
+        
         N = self.n_cities
         x = (result.solution >= threshold).astype(int)
         
         # Decode solution
-        # Find city at each step
-        tour = []
+        tour_order = {}
+        tour_sequence = []
+        
+        valid = True
         for t in range(N):
-            # Find i such that x_{i,t} == 1
-            cities_at_t = []
-            for i in range(N):
-                if x[i * N + t] == 1:
-                    cities_at_t.append(i)
-            
-            if len(cities_at_t) == 1:
-                tour.append(cities_at_t[0])
+            cities = [i for i in range(N) if x[i*N + t] == 1]
+            if len(cities) == 1:
+                city = cities[0]
+                tour_order[city] = t
+                tour_sequence.append(city)
             else:
-                # Invalid tour step (0 or >1 cities)
-                tour.append(None)
+                valid = False
+                # print(f"Step {t}: Invalid number of cities {cities}")
                 
-        # Plot
+        # Create Graph for visualization
+        G = nx.Graph()
+        G.add_nodes_from(range(N))
+        
+        # Add edges from distance matrix (only "finite" ones)
+        # We assume large values (> mean + 3std or fixed threshold) are missing edges
+        # Or we just plot all edges with transparency?
+        # User said: "If no edge, distance is infinite".
+        # Let's infer "infinite" as > 50 (based on notebook example where max random weight is 10)
+        # Or better, just use the weights provided.
+        
+        edge_labels = {}
+        for i in range(N):
+            for j in range(i + 1, N):
+                w = self.distance_matrix[i, j]
+                if w < 50.0: # Heuristic threshold
+                    G.add_edge(i, j, weight=w)
+                    edge_labels[(i, j)] = f"{w:.1f}"
+                    
+        pos = nx.spring_layout(G, seed=42)
+        
         plt.figure(figsize=(8, 8))
         
-        # Generate random positions if not provided (assuming distance matrix implies geometry)
-        # For visualization, we can use MDS to project distances to 2D, or just circle if unknown.
-        # Let's assume cities are on a circle for generic visualization if no coords.
-        # But wait, usually TSP comes with coordinates.
-        # Here we only have distance matrix.
-        # Let's use simple circular layout.
-        coords = np.zeros((N, 2))
-        for i in range(N):
-            angle = 2 * np.pi * i / N
-            coords[i] = [np.cos(angle), np.sin(angle)]
+        # Draw base graph
+        nx.draw(G, pos, with_labels=False, node_color='lightgray', node_size=500, alpha=0.5)
+        nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, alpha=0.5)
+        
+        if valid and len(set(tour_sequence)) == N:
+            # Calculate Cost
+            cost = 0
+            tour_edges = []
+            for t in range(N):
+                u = tour_sequence[t]
+                v = tour_sequence[(t+1)%N]
+                d = self.distance_matrix[u, v]
+                cost += d
+                if G.has_edge(u, v):
+                    tour_edges.append((u, v))
+                else:
+                    # Virtual edge for visualization if missing
+                    tour_edges.append((u, v))
             
-        # Draw all cities
-        plt.scatter(coords[:, 0], coords[:, 1], s=100, c='blue')
-        for i in range(N):
-            plt.text(coords[i, 0] * 1.1, coords[i, 1] * 1.1, str(i), fontsize=12)
+            # Draw Tour
+            nx.draw_networkx_edges(G, pos, edgelist=tour_edges, edge_color='red', width=2)
             
-        # Draw tour
-        valid_tour = True
-        if None in tour:
-            valid_tour = False
-            plt.title(f"Invalid Tour: {tour}")
+            # Labels: City ID + Order
+            node_labels = {i: f"{i}\\n({tour_order.get(i, '?')})" for i in range(N)}
+            nx.draw_networkx_labels(G, pos, labels=node_labels)
+            
+            plt.title(f"TSP Tour (Cost: {cost:.1f})\nStart: City 0")
         else:
-            # Check if all cities visited
-            if len(set(tour)) == N:
-                plt.title(f"Valid Tour: {tour}")
-                # Draw edges
-                for t in range(N):
-                    i = tour[t]
-                    j = tour[(t + 1) % N]
-                    p1 = coords[i]
-                    p2 = coords[j]
-                    plt.plot([p1[0], p2[0]], [p1[1], p2[1]], 'r-')
-            else:
-                valid_tour = False
-                plt.title(f"Incomplete Tour: {tour}")
-                
-        plt.axis('equal')
+            nx.draw_networkx_labels(G, pos)
+            plt.title(f"Invalid Tour Found\nValid Steps: {len(tour_sequence)}/{N}")
+            
+        plt.axis('off')
         plt.show()
