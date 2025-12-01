@@ -64,6 +64,14 @@ class Process:
             if len(energy_trace) > 0:
                 energy_trace = np.array(energy_trace) + offset
                 
+                # Normalize energy to [0, 1]
+                e_min = np.min(energy_trace)
+                e_max = np.max(energy_trace)
+                if e_max > e_min:
+                    energy_trace = (energy_trace - e_min) / (e_max - e_min)
+                else:
+                    energy_trace = np.zeros_like(energy_trace)
+                
         finally:
             self.driver.disconnect()
             
