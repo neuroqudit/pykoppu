@@ -70,7 +70,40 @@ class SimulationResult:
             
         # 3. System Energy
         if len(self.energy_history) > 0:
-            axes[2].plot(self.energy_history, color='red', linewidth=1.5)
+            # Plot Energy Trace
+            axes[2].plot(self.energy_history, color='red', linewidth=1.5, label='Energy Trace')
+            
+            # Calculate Statistics
+            e_max = np.max(self.energy_history)
+            e_min = np.min(self.energy_history)
+            e_mean = np.mean(self.energy_history)
+            e_final = self.energy_history[-1]
+            
+            # Linear Regression
+            x = np.arange(len(self.energy_history))
+            y = self.energy_history
+            slope, intercept = np.polyfit(x, y, 1)
+            trend_line = slope * x + intercept
+            
+            # Plot Trend Line
+            axes[2].plot(x, trend_line, color='blue', linestyle='--', linewidth=1.5, label=f'Trend (slope={slope:.2e})')
+            
+            # Display Stats
+            stats_text = (
+                f"Max: {e_max:.4f}\n"
+                f"Min: {e_min:.4f}\n"
+                f"Mean: {e_mean:.4f}\n"
+                f"Final: {e_final:.4f}"
+            )
+            
+            # Legend in upper right
+            axes[2].legend(loc='upper right', bbox_to_anchor=(1.0, 1.0))
+            
+            # Place text box below the legend (approx y=0.78)
+            axes[2].text(1.0, 0.78, stats_text, transform=axes[2].transAxes, 
+                         fontsize=10, verticalalignment='top', horizontalalignment='right',
+                         bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
+            
             axes[2].set_ylabel("Energy (H)")
             axes[2].set_xlabel("Time Step")
             axes[2].set_title("System Energy Evolution")
