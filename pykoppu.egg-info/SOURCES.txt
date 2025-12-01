@@ -40,6 +40,8 @@ pykoppu/problems/graph/maxcut.py
 pykoppu/problems/logistics/__init__.py
 pykoppu/problems/logistics/knapsack.py
 pykoppu/problems/logistics/tsp.py
+pykoppu/problems/math/__init__.py
+pykoppu/problems/math/sat3.py
 tests/.gitkeep
 tests/test_backends.py
 tests/test_sanity.py
