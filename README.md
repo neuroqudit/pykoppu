@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
-  <a href="https://koppu.io/docs"><strong>Explore the Docs »</strong></a>
+  <a href="https://pykoppu.readthedocs.io/en/latest"><strong>Explore the Docs »</strong></a>
   <br />
   <br />
   <a href="https://koppu.io">Koppu Cloud (OaaS)</a>
