@@ -5,8 +5,7 @@ This module defines the SimulationResult class for rich telemetry and visualizat
 """
 
 import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
+import numpy as np
 from typing import Dict, Any, List, Tuple, Optional
 
 class SimulationResult:
@@ -43,6 +42,8 @@ class SimulationResult:
         2. Final State (Heatmap/Bar)
         3. System Energy (Time Series)
         """
+        import matplotlib.pyplot as plt
+        import seaborn as sns
         sns.set_theme(style="whitegrid")
         fig, axes = plt.subplots(3, 1, figsize=(10, 12), sharex=False)
         
