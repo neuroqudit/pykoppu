@@ -48,4 +48,6 @@ nav:
   - API Reference:
       - OOS (Operating System): api/oos.md
       - OPU (Processing Unit): api/opu.md
+      - BioCompiler: api/biocompiler.md
+      - Electrophysiology: api/electrophysiology.md
       - Problems: api/problems.md
