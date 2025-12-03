@@ -10,7 +10,7 @@ from .cloud import CLOUDDriver
 
 from typing import Any, Optional
 
-def connect(driver_name: str = "cpu", opu: Optional[Any] = None, **kwargs) -> ElectrophysiologyDriver:
+def connect(driver_name: str = "cpu", opu: Optional[Any] = None, **kwargs: Any) -> ElectrophysiologyDriver:
     """
     Factory function to connect to a driver.
     

@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="pykoppu",
-    version="0.2.32-alpha",
+    version="0.2.33-alpha",
     packages=find_packages(),
     install_requires=[
         "brian2>=2.5",
