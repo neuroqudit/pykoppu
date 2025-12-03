@@ -12,11 +12,11 @@ from pykoppu.oos import Process
 
 # Factor 15
 problem = Factorization(target=15)
-process = Process(problem)
+process = Process(problem, backend='cpu', t=1000)
 result = process.run()
 
 # Visualize
-problem.plot(result)
+problem.plot(result, threshold=0.5)
 ```
 
 ## 3-SAT (Boolean Satisfiability)
@@ -33,9 +33,9 @@ clauses = [
     (-0, -1, 2)
 ]
 problem = SAT3(clauses)
-process = Process(problem)
+process = Process(problem, backend='cpu', t=1000)
 result = process.run()
 
 # Visualize
-problem.plot(result)
+problem.plot(result, threshold=0.5)
 ```

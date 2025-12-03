@@ -37,7 +37,7 @@ process = pk.oos.Process(problem, backend='cpu', t=1000)
 result = process.run()
 
 # 4. Visualize Results
-problem.plot(result)
+problem.plot(result, threshold=0.5)
 
 # 5. Inspect Solution
 metrics = problem.evaluate(result.solution)

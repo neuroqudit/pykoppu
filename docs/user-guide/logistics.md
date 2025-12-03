@@ -20,10 +20,10 @@ distances = np.array([
 ])
 
 problem = TSP(distances)
-process = Process(problem)
+process = Process(problem, backend='cpu', t=1000)
 result = process.run()
 
-problem.plot(result)
+problem.plot(result, threshold=0.5)
 ```
 
 ## Knapsack Problem
@@ -39,8 +39,8 @@ weights = [5, 10, 15]
 capacity = 20
 
 problem = Knapsack(values, weights, capacity)
-process = Process(problem)
+process = Process(problem, backend='cpu', t=1000)
 result = process.run()
 
-problem.plot(result)
+problem.plot(result, threshold=0.5)
 ```

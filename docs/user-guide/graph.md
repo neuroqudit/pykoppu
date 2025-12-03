@@ -16,9 +16,9 @@ G = nx.erdos_renyi_graph(n=10, p=0.5)
 
 # Define problem
 problem = MaxCut(G)
-process = Process(problem)
+process = Process(problem, backend='cpu', t=1000)
 result = process.run()
 
 # Visualize
-problem.plot(result)
+problem.plot(result, threshold=0.5)
 ```

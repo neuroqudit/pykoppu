@@ -21,8 +21,8 @@ sigma = np.array([
 ])
 
 problem = PortfolioOptimization(mu, sigma, risk_aversion=1.0, budget=2)
-process = Process(problem)
+process = Process(problem, backend='cpu', t=1000)
 result = process.run()
 
-problem.plot(result)
+problem.plot(result, threshold=0.5)
 ```

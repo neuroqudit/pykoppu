@@ -17,10 +17,10 @@ locations = [
 ]
 
 problem = WellPlacement(locations, budget=50, min_dist=1.5)
-process = Process(problem)
+process = Process(problem, backend='cpu', t=1000)
 result = process.run()
 
-problem.plot(result)
+problem.plot(result, threshold=0.5)
 ```
 
 ## Seismic Feature Selection
@@ -36,8 +36,8 @@ redundancy = [[1.0, 0.9, 0.1], [0.9, 1.0, 0.2], [0.1, 0.2, 1.0]]
 
 # Select k=2 features
 problem = SeismicFeatureSelection(relevance, redundancy, k=2)
-process = Process(problem)
+process = Process(problem, backend='cpu', t=1000)
 result = process.run()
 
-problem.plot(result)
+problem.plot(result, threshold=0.5)
 ```
