@@ -33,6 +33,9 @@ pykoppu/opu/kernel.py
 pykoppu/opu/pobit.py
 pykoppu/problems/__init__.py
 pykoppu/problems/base.py
+pykoppu/problems/energy/__init__.py
+pykoppu/problems/energy/seismic.py
+pykoppu/problems/energy/well_placement.py
 pykoppu/problems/finance/__init__.py
 pykoppu/problems/finance/portfolio.py
 pykoppu/problems/graph/__init__.py
@@ -47,5 +50,7 @@ tests/.gitkeep
 tests/test_backends.py
 tests/test_factorization.py
 tests/test_sanity.py
+tests/test_seismic.py
+tests/test_well_placement.py
 tests/validate_opu.py
 tests/__pycache__/test_sanity.cpython-312.pyc
