@@ -168,8 +168,7 @@ class MaxCut(PUBOProblem):
             if x[i] != x[j]:
                 cut_edges += 1
                 
-        accuracy = (cut_edges / total_edges) * 100 if total_edges > 0 else 0.0
-        return {"accuracy": accuracy, "cut_size": cut_edges}
+        return {"cut_size": cut_edges}
 
     def plot(self, result: Any, threshold: float = 0.5) -> None:
         """
@@ -206,7 +205,5 @@ class MaxCut(PUBOProblem):
             if x[i] != x[j]:
                 cut_edges += 1
                 
-        accuracy = (cut_edges / total_edges) * 100 if total_edges > 0 else 0.0
-        
-        plt.title(f"MaxCut Solution (Red vs Blue)\nThreshold: {threshold} | Cut Size: {cut_edges} | Accuracy: {accuracy:.2f}%")
+        plt.title(f"MaxCut Solution (Red vs Blue)\nThreshold: {threshold} | Cut Size: {cut_edges}")
         plt.show()

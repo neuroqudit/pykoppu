@@ -17,7 +17,7 @@ class SimulationResult:
         solution (np.ndarray): The final state vector.
         energy_history (np.ndarray): The energy evolution over time.
         spikes (Tuple[np.ndarray, np.ndarray]): Tuple of (spike_times, neuron_indices).
-        metrics (Dict[str, Any]): Evaluation metrics (accuracy, validity, etc.).
+        metrics (Dict[str, Any]): Evaluation metrics (validity, etc.).
         metadata (Dict[str, Any]): Simulation metadata.
     """
     
