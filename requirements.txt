@@ -6,3 +6,5 @@ matplotlib
 seaborn
 jupyter
 notebook
+mkdocs-material
+mkdocstrings[python]
