@@ -16,7 +16,7 @@ PyKoppu allows you to solve complex optimization problems by mapping them to the
 - [Getting Started](getting-started.md)
 - [User Guide](user-guide/math.md)
 - [API Reference](api/problems.md)
-- [GitHub Repository](https://github.com/koppu/pykoppu)
+- [GitHub Repository](https://github.com/neuroqudit/pykoppu)
 
 ## Installation
 
