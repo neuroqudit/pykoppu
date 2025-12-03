@@ -4,7 +4,7 @@ The OPU layer handles the low-level simulation of organoid physics.
 
 ## Device
 
-::: pykoppu.opu.Device
+::: pykoppu.opu.OPU
 
 ## Kernel
 
