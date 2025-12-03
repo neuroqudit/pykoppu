@@ -41,9 +41,11 @@ pykoppu/problems/logistics/__init__.py
 pykoppu/problems/logistics/knapsack.py
 pykoppu/problems/logistics/tsp.py
 pykoppu/problems/math/__init__.py
+pykoppu/problems/math/factorization.py
 pykoppu/problems/math/sat3.py
 tests/.gitkeep
 tests/test_backends.py
+tests/test_factorization.py
 tests/test_sanity.py
 tests/validate_opu.py
 tests/__pycache__/test_sanity.cpython-312.pyc
