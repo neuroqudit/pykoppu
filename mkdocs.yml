@@ -1,8 +1,8 @@
 site_name: PyKoppu Documentation
 site_description: SDK for KOPPU (K-dimensional Organoid Probabilistic Processing Unit)
 site_author: KOPPU Team
-repo_url: https://github.com/koppu/pykoppu
-repo_name: koppu/pykoppu
+repo_url: https://github.com/neuroqudit/pykoppu
+repo_name: neuroqudit/pykoppu
 edit_uri: edit/main/docs/
 
 theme:
@@ -40,12 +40,12 @@ nav:
   - Home: index.md
   - Getting Started: getting-started.md
   - User Guide:
-    - Math Problems: user-guide/math.md
-    - Graph Problems: user-guide/graph.md
-    - Logistics: user-guide/logistics.md
-    - Finance: user-guide/finance.md
-    - Energy: user-guide/energy.md
+      - Math Problems: user-guide/math.md
+      - Graph Problems: user-guide/graph.md
+      - Logistics: user-guide/logistics.md
+      - Finance: user-guide/finance.md
+      - Energy: user-guide/energy.md
   - API Reference:
-    - OOS (Operating System): api/oos.md
-    - OPU (Processing Unit): api/opu.md
-    - Problems: api/problems.md
+      - OOS (Operating System): api/oos.md
+      - OPU (Processing Unit): api/opu.md
+      - Problems: api/problems.md
