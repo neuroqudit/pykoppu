@@ -1,31 +1,25 @@
-# Welcome to KOPPU
+# Welcome to PyKoppu
 
-**K-dimensional Organoid Probabilistic Processing Unit**
+**PyKoppu** is the official Python SDK for **KOPPU** (K-dimensional Organoid Probabilistic Processing Unit), a next-generation neuromorphic computing platform.
 
-KOPPU is a project designed to interface with organoid processing units. This repository contains the `pykoppu` SDK.
+PyKoppu allows you to solve complex optimization problems by mapping them to the physics of biological organoids.
 
-## Getting Started
+## Key Features
 
-### Installation
+- **Intuitive API**: Solve NP-hard problems with just a few lines of Python.
+- **Diverse Problem Set**: Built-in support for Math, Graph, Logistics, Finance, and Energy problems.
+- **Hybrid Execution**: Run simulations on CPU/GPU or connect to real KOPPU hardware.
+- **Visualization**: Rich plotting tools to analyze solution dynamics.
+
+## Quick Links
+
+- [Getting Started](getting-started.md)
+- [User Guide](user-guide/math.md)
+- [API Reference](api/problems.md)
+- [GitHub Repository](https://github.com/koppu/pykoppu)
+
+## Installation
 
 ```bash
 pip install pykoppu
-```
-
-### Basic Usage
-
-```python
-import networkx as nx
-from pykoppu import Process, MaxCut
-
-# 1. Define a problem
-G = nx.erdos_renyi_graph(10, 0.5)
-problem = MaxCut(G)
-
-# 2. Create a process
-process = Process(problem, backend="brian2")
-
-# 3. Run
-result = process.run()
-print(result)
 ```

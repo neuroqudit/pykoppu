@@ -1,9 +1,30 @@
-site_name: KOPPU
+site_name: PyKoppu Documentation
+site_description: SDK for KOPPU (K-dimensional Organoid Probabilistic Processing Unit)
+site_author: KOPPU Team
+repo_url: https://github.com/koppu/pykoppu
+repo_name: koppu/pykoppu
+edit_uri: edit/main/docs/
+
 theme:
   name: material
   palette:
-    primary: purple
-    accent: teal
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - content.code.copy
 
 plugins:
   - search
@@ -11,11 +32,20 @@ plugins:
       handlers:
         python:
           paths: [.]
+          options:
+            show_root_heading: true
+            show_source: true
 
 nav:
   - Home: index.md
+  - Getting Started: getting-started.md
+  - User Guide:
+    - Math Problems: user-guide/math.md
+    - Graph Problems: user-guide/graph.md
+    - Logistics: user-guide/logistics.md
+    - Finance: user-guide/finance.md
+    - Energy: user-guide/energy.md
   - API Reference:
-      - OPU: api/opu.md
-      - BioCompiler: api/biocompiler.md
-      - Electrophysiology: api/electrophysiology.md
-      - Problems Library: api/problems.md
+    - OOS (Operating System): api/oos.md
+    - OPU (Processing Unit): api/opu.md
+    - Problems: api/problems.md

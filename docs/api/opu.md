@@ -1,5 +1,11 @@
-# OPU API
+# OPU (Organoid Processing Unit)
 
-::: pykoppu.opu.device.OPU
-::: pykoppu.opu.pobit.Pobit
-::: pykoppu.opu.kernel.Kernel
+The OPU layer handles the low-level simulation of organoid physics.
+
+## Device
+
+::: pykoppu.opu.Device
+
+## Kernel
+
+::: pykoppu.opu.Kernel
